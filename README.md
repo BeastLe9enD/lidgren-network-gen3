@@ -1,3 +1,7 @@
+# Lidgren.Network .NET Core Port
+This inofficial modified version of Lidgren.Network supports .NET Core and offers some advantages:
+  * Read/Write methods for unsafe pointers in NetBuffer
+  * Write methods for System.Span / System.Memory in NetBuffer
 # Lidgren.Network ![](https://api.travis-ci.org/RevoluPowered/lidgren-network-gen3.svg?branch=master)
 Lidgren.Network is a networking library for .NET framework, which uses a single UDP socket to deliver a simple API for connecting a client to a server, reading and sending messages.
 
