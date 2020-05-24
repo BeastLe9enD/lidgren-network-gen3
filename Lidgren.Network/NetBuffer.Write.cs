@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Runtime.InteropServices;
 
@@ -157,6 +158,80 @@ namespace Lidgren.Network
 			EnsureBufferSize(m_bitLength + bits);
 			NetBitWriter.WriteBytes(source, offsetInBytes, numberOfBytes, m_data, m_bitLength);
 			m_bitLength += bits;
+		}
+
+		/// <summary>
+		/// Writes all bytes in unmanaged array
+		/// </summary>
+		public unsafe void Write(byte* pSource, int length)
+		{
+			if (pSource == null)
+				throw new ArgumentNullException(nameof(pSource));
+			var bits = length * 8;
+			EnsureBufferSize(m_bitLength + bits);
+			NetBitWriter.WriteBytes(pSource, 0, length, m_data, m_bitLength);
+			m_bitLength += bits;
+		}
+
+		/// <summary>
+		/// Writes the specified number of bytes from unmanaged array
+		/// </summary>
+		public unsafe void Write(byte* pSource, int offsetInBytes, int numberOfBytes)
+		{
+			if (pSource == null)
+				throw new ArgumentNullException(nameof(pSource));
+			var bits = numberOfBytes * 8;
+			EnsureBufferSize(m_bitLength + bits);
+			NetBitWriter.WriteBytes(pSource, offsetInBytes, numberOfBytes, m_data, m_bitLength);
+			m_bitLength += bits;
+		}
+
+		/// <summary>
+		/// Writes all bytes in span
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public unsafe void Write(Span<byte> source)
+		{
+			fixed (byte* pSource = source)
+			{
+				Write(pSource, source.Length);
+			}
+		}
+
+		/// <summary>
+		/// Writes the specified number of bytes from span
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public unsafe void Write(Span<byte> source, int offsetInBytes, int numberOfBytes)
+		{
+			fixed (byte* pSource = source)
+			{
+				Write(pSource, offsetInBytes, numberOfBytes);
+			}
+		}
+
+		/// <summary>
+		/// Writes all bytes in memory
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public unsafe void Write(ReadOnlyMemory<byte> memory)
+		{
+			fixed (byte* pSource = memory.Span)
+			{
+				Write(pSource, memory.Length);
+			}
+		}
+
+		/// <summary>
+		/// Writes the specified number of bytes from memory
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public unsafe void Write(ReadOnlyMemory<byte> memory, int offsetInBytes, int numberOfBytes)
+		{
+			fixed (byte* pSource = memory.Span)
+			{
+				Write(pSource, offsetInBytes, numberOfBytes);
+			}
 		}
 
 		/// <summary>

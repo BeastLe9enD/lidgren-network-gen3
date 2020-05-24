@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Lidgren.Network
 {
@@ -92,6 +93,37 @@ namespace Lidgren.Network
 				int second = fromBuffer[readPtr] & secondMask;
 
 				destination[destinationByteOffset++] = (byte)(b | (second << secondPartLen));
+			}
+
+			return;
+		}
+
+		public static unsafe void ReadBytes(byte[] fromBuffer, int numberOfBytes, int readBitOffset, byte* pDestination, int destinationByteOffset)
+		{
+			int readPtr = readBitOffset >> 3;
+			int startReadAtIndex = readBitOffset - (readPtr * 8); // (readBitOffset % 8);
+
+			if (startReadAtIndex == 0)
+			{
+				var destinationPtr = new IntPtr(pDestination + destinationByteOffset);
+				Marshal.Copy(fromBuffer, readPtr, destinationPtr, numberOfBytes);
+				return;
+			}
+
+			int secondPartLen = 8 - startReadAtIndex;
+			int secondMask = 255 >> secondPartLen;
+
+			for (int i = 0; i < numberOfBytes; i++)
+			{
+				// mask away unused bits lower than (right of) relevant bits in byte
+				int b = fromBuffer[readPtr] >> startReadAtIndex;
+
+				readPtr++;
+
+				// mask away unused bits higher than (left of) relevant bits in second byte
+				int second = fromBuffer[readPtr] & secondMask;
+
+				pDestination[destinationByteOffset++] = (byte)(b | (second << secondPartLen));
 			}
 
 			return;
@@ -180,8 +212,39 @@ namespace Lidgren.Network
 				destination[dstBytePtr] &= (byte)(255 << firstPartLen); // clear before writing
 				destination[dstBytePtr] |= (byte)(src >> lastPartLen); // write second half
 			}
+		}
 
-			return;
+		/// <summary>
+		/// Write several whole bytes (unsafe pointer array)
+		/// </summary>
+		public static unsafe void WriteBytes(byte* pSource, int sourceByteOffset, int numberOfBytes, byte[] destination,
+			int destBitOffset)
+		{
+			int dstBytePtr = destBitOffset >> 3;
+			int firstPartLen = (destBitOffset % 8);
+
+			if (firstPartLen == 0)
+			{
+				Marshal.Copy(new IntPtr(pSource + sourceByteOffset), destination, dstBytePtr, numberOfBytes);
+				return;
+			}
+
+			int lastPartLen = 8 - firstPartLen;
+
+			for (int i = 0; i < numberOfBytes; i++)
+			{
+				byte src = pSource[sourceByteOffset + i];
+
+				// write last part of this byte
+				destination[dstBytePtr] &= (byte)(255 >> lastPartLen); // clear before writing
+				destination[dstBytePtr] |= (byte)(src << firstPartLen); // write first half
+
+				dstBytePtr++;
+
+				// write first part of next byte
+				destination[dstBytePtr] &= (byte)(255 << firstPartLen); // clear before writing
+				destination[dstBytePtr] |= (byte)(src >> lastPartLen); // write second half
+			}
 		}
 
 		/// <summary>
