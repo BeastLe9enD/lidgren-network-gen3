@@ -98,6 +98,7 @@ namespace Lidgren.Network
 			return;
 		}
 
+		[CLSCompliant(false)]
 		public static unsafe void ReadBytes(byte[] fromBuffer, int numberOfBytes, int readBitOffset, byte* pDestination, int destinationByteOffset)
 		{
 			int readPtr = readBitOffset >> 3;
@@ -217,6 +218,7 @@ namespace Lidgren.Network
 		/// <summary>
 		/// Write several whole bytes (unsafe pointer array)
 		/// </summary>
+		[CLSCompliant(false)]
 		public static unsafe void WriteBytes(byte* pSource, int sourceByteOffset, int numberOfBytes, byte[] destination,
 			int destBitOffset)
 		{

@@ -126,6 +126,7 @@ namespace Lidgren.Network
 			return;
 		}
 
+		[CLSCompliant(false)]
 		public unsafe void ReadBytes(byte* pBuffer, int numberOfBytes)
 		{
 			NetException.Assert(m_bitLength - m_readPosition + 7 >= (numberOfBytes * 8), c_readOverflowError);
@@ -134,6 +135,7 @@ namespace Lidgren.Network
 			m_readPosition += (8 * numberOfBytes);
 		}
 
+		[CLSCompliant(false)]
 		public unsafe void ReadBytes(byte* pBuffer, int offset, int numberOfBytes)
 		{
 			NetException.Assert(m_bitLength - m_readPosition + 7 >= (numberOfBytes * 8), c_readOverflowError);

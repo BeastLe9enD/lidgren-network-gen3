@@ -163,6 +163,7 @@ namespace Lidgren.Network
 		/// <summary>
 		/// Writes all bytes in unmanaged array
 		/// </summary>
+		[CLSCompliant(false)]
 		public unsafe void Write(byte* pSource, int length)
 		{
 			if (pSource == null)
@@ -176,6 +177,7 @@ namespace Lidgren.Network
 		/// <summary>
 		/// Writes the specified number of bytes from unmanaged array
 		/// </summary>
+		[CLSCompliant(false)]
 		public unsafe void Write(byte* pSource, int offsetInBytes, int numberOfBytes)
 		{
 			if (pSource == null)
