@@ -1,4 +1,4 @@
-﻿#define USE_SHA256
+﻿﻿#define USE_SHA256
 
 using System;
 using System.Security.Cryptography;

@@ -1,4 +1,4 @@
-﻿//#define UNSAFE
+﻿﻿//#define UNSAFE
 //#define BIGENDIAN
 /* Copyright (c) 2010 Michael Lidgren
 
